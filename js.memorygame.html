@@ -19,7 +19,7 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        background: rgb(68, 15, 227);
+        background: rgb(83, 35, 227);
     }
     .wrapper{
         height: 400px;
@@ -79,7 +79,7 @@
         user-select: none;
         pointer-events: none;
         position: absolute;
-        background: red;
+        background: rgb(237, 25, 25);
         border-radius: 7px;
         backface-visibility: hidden;
         transition: transform 0.25s linear;
@@ -102,9 +102,19 @@
     .card.flip .back-view{
         transform: rotateY(0);
     }
-    
+    .head {
+        font-size: 20px;
+        color: coral;
+        text-shadow: 1px 1px 2px black, 0 0 25px rgb(17, 240, 51), 0 0 5px rgb(139, 0, 111);
+        text-align: center;
+    }
 </style>
 <body>
+<div class="head">
+        <h1>MEMORY MANIA  </h1>
+        <p>ch17dhanu7sh</p>
+    
+    
     <div class="wrapper">
         <ul class="cards">
             <li class="card">
@@ -238,20 +248,23 @@
             
         </ul>
     </div>
+</div>
 <script>
     const cards=document.querySelectorAll(".card");
-
+    let matchedCard = 0;
     let card1, card2;
+    let disableDeck = false;
 
     function flipCard(e){
         let clickedCard = e.target; //getting user clicked card
-        if(clickedCard !== card1) {
+        if(clickedCard !== card1 && !disableDeck) {
             clickedCard.classList.add("flip");
             if(!card1){
                 //return the card1 value to clickedCard
                 return card1 = clickedCard;
             }
         card2 = clickedCard;
+        disableDeck = true;
         let card1Img = card1.querySelector("img").src,
         card2Img = card2.querySelector("img").src;
         matchCards(card1Img,card2Img);
@@ -261,17 +274,64 @@
     }
 
     function matchCards(img1,img2){
-        if(img1 === img2) {//if 2 cards img mached
-            return consle.log("Card matched");
+        if(img1 === img2) {//if 2 cards img matched
+            matchedCard++; //increment matched value by 1
+            //if matched value is 8 that means user has matched all the cards (8 * 2 = 16 cards)
+            if(matchedCard ==8 ) {
+                setTimeout (() => {
+                    return shuffleCard();
+                },1000);
+                
+            } 
+            card1.removeEventListener("click",flipCard);
+            card2.removeEventListener("click",flipCard);
+            card1 = card2 = ""; //seting both card value to blank
+            return disableDeck = false;;
         }
 
-        card1.classList.add("shake");
-        card2.classList.add("shake");
+        // if 2 card not matched
+        setTimeout(() => {
+            //adding shake class to both card after 400ms
+            card1.classList.add("shake");
+            card2.classList.add("shake");
+
+        },400);
+
+        setTimeout(() => {
+            //removing both shake & flip classes from the  both card after 400ms
+            card1.classList.remove("shake","flip");
+            card2.classList.remove("shake","flip");
+            card1 = card2 = "";//setting both card value to blank
+            disableDeck = false;
+
+        },1200);
+
     }    
+
+    function shuffleCard() {
+         matchedCard = 0;
+         card1 = card2 = "";
+         disableDeck = false;
+         let arr = [1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8];
+         arr.sort(() => Math.random() > 0.5 ? 1 : -1); //sorting array item randomly
+
+
+         //removing flip class from all cards and passing random image to each card
+         cards.forEach(card  => { 
+            card.classList.remove("flip");
+            let imgTag = card.querySelector("img");
+            card.classList.remove("flip");
+            card.addEventListener("click",flipCard);
+
+        });
+    }    
+
+    shuffleCard();
+
     cards.forEach(card => { //adding click events to all cards 
         card.addEventListener("click",flipCard);
     })
-    console.log(cards);
+
 
 </script>
 </body>
